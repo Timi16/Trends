@@ -1,17 +1,22 @@
 
 const express = require('express');
+const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
-const routes = require('./routes');
+const userRoutes = require('./routes/userRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
 // Middleware
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+// Connect to MongoDB directly (for testing purposes)
+mongoose.connect('mongodb+srv://Admin:admin12345@atlascluster.16dkxcn.mongodb.net/?retryWrites=true&w=majority&appName=AtlasCluster')
+  .then(() => console.log('MongoDB connected'))
+  .catch(err => console.log(err));
 
 // Routes
-app.use('/', routes);
+app.use('/api', userRoutes);
 
-app.listen(PORT, () => {
-  console.log(`Server is running on http://localhost:${PORT}`);
-});
+// Start server
+const PORT = process.env.PORT || 5000;
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
