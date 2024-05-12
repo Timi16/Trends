@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
-exports.registerUser = async (req, res) => {
+const userController = require('../controllers/userController');
+const registerUser= async (req, res) => {
   try {
     const { username, email, password } = req.body;
 
@@ -32,7 +33,7 @@ exports.registerUser = async (req, res) => {
   }
 };
 
-exports.loginUser = async (req, res) => {
+const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
@@ -58,4 +59,37 @@ exports.loginUser = async (req, res) => {
     console.error('Error logging in:', err.message);
     res.status(500).send('Server Error');
   }
+};
+
+const getUserByUsername = async (username) => {
+  try {
+    // Find the user by username
+    const user = await User.findOne({ username });
+    return user;
+  } catch (error) {
+    console.error('Error fetching user by username:', error.message);
+    return null;
+  }
+};
+// Route to fetch user by username
+const getUserProfile = async (req, res) => {
+  const receiverUsername = req.params.username;
+  try {
+    const receiver = await getUserByUsername(receiverUsername);
+    if (!receiver) {
+      return res.status(404).json({ error: 'Receiver not found' });
+    }
+    res.json(receiver);
+  } catch (error) {
+    console.error('Error fetching receiver data:', error.message);
+    res.status(500).json({ error: 'Server Error' });
+  }
+};
+
+
+module.exports = {
+  registerUser,
+  loginUser,
+  getUserByUsername,
+  getUserProfile,
 };
