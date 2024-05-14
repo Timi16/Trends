@@ -1,6 +1,6 @@
 const User = require('../models/User');
 const jwt = require('jsonwebtoken');
-const userController = require('../controllers/userController');
+const blacklist = new Set();
 const registerUser= async (req, res) => {
   try {
     const { username, email, password } = req.body;
@@ -85,11 +85,45 @@ const getUserProfile = async (req, res) => {
     res.status(500).json({ error: 'Server Error' });
   }
 };
+// Logout endpoint
+const logoutUser = async (req, res) => {
+  try {
+    const token = req.headers.authorization; // Assuming token is passed in the Authorization header
 
+    // Check if token is present
+    if (!token) {
+      return res.status(401).json({ msg: 'Token is required' });
+    }
+
+    // Add token to blacklist
+    blacklist.add(token);
+
+    console.log('User logged out successfully');
+    res.json({ msg: 'User logged out successfully' });
+  } catch (err) {
+    console.error('Error logging out user:', err.message);
+    res.status(500).send('Server Error');
+  }
+};
+
+// Middleware to check token against blacklist
+const checkTokenBlacklist = (req, res, next) => {
+  const token = req.headers.authorization; // Assuming token is passed in the Authorization header
+
+  // Check if token is present and blacklisted
+  if (token && blacklist.has(token)) {
+    return res.status(401).json({ msg: 'Token is invalid' });
+  }
+
+  // Token is valid, continue to the next middleware
+  next();
+};
 
 module.exports = {
   registerUser,
   loginUser,
   getUserByUsername,
   getUserProfile,
+  logoutUser,
+  checkTokenBlacklist,
 };

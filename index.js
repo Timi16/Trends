@@ -3,9 +3,10 @@ const express = require('express');
 const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const userRoutes = require('./routes/userRoutes');
+const sellerRoutes = require('./routes/sellerRoutes');
 const http = require('http');
 const socketIo = require('socket.io');
-
+//const sellerRoutes = require('./routes/sellerRoutes');
 const app = express();
 
 const server = http.createServer(app);
@@ -21,6 +22,7 @@ mongoose.connect('mongodb+srv://Admin:admin12345@atlascluster.16dkxcn.mongodb.ne
 
 // Routes
 app.use('/api', userRoutes);
+//app.use('/api', sellerRoutes);
 // Socket.io connection handling
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
