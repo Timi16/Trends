@@ -1,5 +1,4 @@
-
-const {Seller, User} = require('../models/User');
+const { Seller, User } = require('../models/User');
 
 // Controller function to create a new seller
 const createSeller = async (req, res) => {
@@ -18,15 +17,23 @@ const createSeller = async (req, res) => {
             return res.status(400).json({ message: 'User is already a seller' });
         }
 
+        // Create a new seller document
+        const newSeller = new Seller({
+            user: user._id,
+            brandName,
+            phoneNumber,
+            accountNumber
+        });
+
+        // Save the new seller document
+        await newSeller.save();
+
         // Update the user to be a seller
         user.role = 'seller';
-        user.brandName = brandName;
-        user.phoneNumber = phoneNumber;
-        user.accountNumber = accountNumber;
         await user.save();
 
         // Return the updated user (seller)
-        res.status(201).json({ seller: user });
+        res.status(201).json({ seller: newSeller });
     } catch (error) {
         console.error('Error creating seller:', error);
         res.status(500).json({ message: 'Internal server error' });

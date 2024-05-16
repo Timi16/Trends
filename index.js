@@ -4,11 +4,11 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const userRoutes = require('./routes/userRoutes');
 const sellerRoutes = require('./routes/sellerRoutes');
+const productRoutes = require('./routes/productRoutes');
 const http = require('http');
 const socketIo = require('socket.io');
-//const sellerRoutes = require('./routes/sellerRoutes');
 const app = express();
-
+const webtrtc = require('wrtc');
 const server = http.createServer(app);
 const io = socketIo(server);
 
@@ -16,14 +16,20 @@ const io = socketIo(server);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 // Connect to MongoDB directly (for testing purposes)
-mongoose.connect('mongodb+srv://Admin:admin12345@atlascluster.16dkxcn.mongodb.net/?retryWrites=true&w=majority&appName=AtlasCluster')
+mongoose.connect("mongodb+srv://Admin:admin12345@atlascluster.am2nbgm.mongodb.net/?retryWrites=true&w=majority&appName=AtlasCluster")
   .then(() => console.log('MongoDB connected'))
   .catch(err => console.log(err));
 
 // Routes
 app.use('/api', userRoutes);
-//app.use('/api', sellerRoutes);
+app.use('/api', sellerRoutes);
+app.use('/api', productRoutes);
 // Socket.io connection handling
+app.post('/broadcast',async({body}) , res) => {
+    const peer = new webtrc.RTCPeerConnection({
+        iceServers : [
+             {
+    
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
 

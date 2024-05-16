@@ -35,8 +35,27 @@ const sellerSchema = new mongoose.Schema({
         required: true
     }
 });
+const productSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    },
+    price: {
+        type: Number,
+        required: true
+    },
+    stock: {
+        type: Number,
+        required: true
+    },
+    images: [{
+        data: Buffer, // Storing image data directly
+        contentType: String // Mime type of the image
+    }]
+});
 
 module.exports = {
     User: mongoose.model('User', userSchema),
-    Seller: mongoose.model('Seller', sellerSchema)
+    Seller: mongoose.model('Seller', sellerSchema),
+    Product: mongoose.model('Product', productSchema)
 };

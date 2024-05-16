@@ -1,4 +1,5 @@
-const User = require('../models/User');
+//const User = require('../models/User');
+const { User } = require('../models/User');
 const jwt = require('jsonwebtoken');
 const blacklist = new Set();
 const registerUser= async (req, res) => {
