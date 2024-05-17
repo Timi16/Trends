@@ -8,10 +8,11 @@ const productRoutes = require('./routes/productRoutes');
 const http = require('http');
 const socketIo = require('socket.io');
 const app = express();
-const webtrtc = require('wrtc');
+//const webtrtc = require('wrtc');
 const server = http.createServer(app);
 const io = socketIo(server);
-
+const cors = require('cors');
+app.use(cors());
 // Middleware
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -25,10 +26,10 @@ app.use('/api', userRoutes);
 app.use('/api', sellerRoutes);
 app.use('/api', productRoutes);
 // Socket.io connection handling
-app.post('/broadcast',async({body}) , res) => {
-    const peer = new webtrc.RTCPeerConnection({
-        iceServers : [
-             {
+//app.post('/broadcast',async({body}) , res) => {
+    //const peer = new webtrc.RTCPeerConnection({
+     //   iceServers : [
+         //    {
     
 io.on('connection', (socket) => {
   console.log('A user connected:', socket.id);
