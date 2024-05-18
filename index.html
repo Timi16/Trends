@@ -63,7 +63,7 @@
             const message = document.getElementById('message');
 
             try {
-                const response = await fetch('http://localhost:5000/api/register', {
+                const response = await fetch('https://trends-s5yl.onrender.com/api/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
@@ -75,6 +75,8 @@
                     const data = await response.json();
                     message.style.color = 'green';
                     message.textContent = data.message;
+                    window.location.href =
+"content://com.termux.documents/tree/%2Fdata%2Fdata%2Fcom.termux%2Ffiles%2Fhome/document/%2Fdata%2Fdata%2Fcom.termux%2Ffiles%2Fhome%2Ftrend%2Fhome.html"
                 } else {
                     const errorData = await response.json();
                     message.style.color = 'red';
