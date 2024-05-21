@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WebRTC Broadcaster</title>
+</head>
+<body>
+    <h1>Broadcast</h1>
+    <video id="video" autoplay muted playsinline></video>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+        const video = document.getElementById('video');
+
+        navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then(stream => {
+            video.srcObject = stream;
+
+            const peerConnection = new RTCPeerConnection({
+                iceServers: [
+                    {
+                        urls: 'stun:stun.stunprotocol.org'
+                    }
+                ]
+            });
+
+            stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+
+            peerConnection.onicecandidate = event => {
+                if (event.candidate) {
+                    socket.emit('candidate', broadcasterId, event.candidate);
+                }
+            };
+
+            socket.on('answer', (id, description) => {
+                peerConnection.setRemoteDescription(description);
+            });
+
+            socket.on('watcher', id => {
+                peerConnection.createOffer().then(sdp => peerConnection.setLocalDescription(sdp)).then(() => {
+                    socket.emit('offer', id, peerConnection.localDescription);
+                });
+            });
+
+            socket.emit('broadcaster');
+        });
+    </script>
+</body>
+</html>
