@@ -27,7 +27,7 @@ mongoose.connect("mongodb+srv://Admin:admin12345@atlascluster.am2nbgm.mongodb.ne
 app.use('/api', userRoutes);
 app.use('/api', sellerRoutes);
 app.use('/api', productRoutes);
-app.use('/api', commentRoutes');
+app.use('/api', commentRoutes);
 wss.on('connection', (ws) => {
   ws.on('message', (message) => {
     const data = JSON.parse(message);
