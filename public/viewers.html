@@ -1,54 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>WebRTC Viewer</title>
+  <meta charset="UTF-8">
+  <title>Viewer</title>
 </head>
 <body>
-    <h1>View Broadcast</h1>
-    <video id="video" autoplay playsinline></video>
-    <script src="/socket.io/socket.io.js"></script>
-    <script>
-        const socket = io('/');
-        const video = document.getElementById('video');
-        const peerConnection = new RTCPeerConnection({
-            iceServers: [
-                {
-                    urls: 'stun:stun.stunprotocol.org'
-                }
-            ]
-        });
+  <h1>Viewer</h1>
+  <video id="remoteVideo" autoplay></video>
+  <button id="startWatching">Start Watching</button>
 
-        peerConnection.ontrack = event => {
-            video.srcObject = event.streams[0];
-        };
+  <script src="https://cdn.jsdelivr.net/npm/simple-peer@9.10.0/simplepeer.min.js"></script>
+  <script>
+    const remoteVideo = document.getElementById('remoteVideo');
+    const ws = new WebSocket('ws://localhost:5000');
+    let peer;
 
-        peerConnection.onicecandidate = event => {
-            if (event.candidate) {
-                socket.emit('candidate', watcherId, event.candidate);
-            }
-        };
+    ws.onopen = () => {
+      console.log('WebSocket connection opened');
+    };
 
-        socket.on('offer', (id, description) => {
-            peerConnection.setRemoteDescription(description).then(() => {
-                return peerConnection.createAnswer();
-            }).then(sdp => {
-                return peerConnection.setLocalDescription(sdp);
-            }).then(() => {
-                socket.emit('answer', id, peerConnection.localDescription);
-            });
-        });
+    ws.onmessage = (message) => {
+      const data = JSON.parse(message.data);
+      switch (data.type) {
+        case 'offer':
+          peer = new SimplePeer({ initiator: false, trickle: false });
+          peer.on('signal', (signal) => {
+            ws.send(JSON.stringify({ type: 'answer', id: data.id, answer: signal }));
+          });
+          peer.on('stream', (stream) => {
+            remoteVideo.srcObject = stream;
+          });
+          peer.signal(data.offer);
+          break;
+        case 'candidate':
+          if (peer) {
+            peer.signal(data.candidate);
+          }
+          break;
+      }
+    };
 
-        socket.on('candidate', (id, candidate) => {
-            peerConnection.addIceCandidate(new RTCIceCandidate(candidate));
-        });
-
-        socket.emit('watcher');
-
-        socket.on('disconnectPeer', () => {
-            peerConnection.close();
-        });
-    </script>
+    document.getElementById('startWatching').addEventListener('click', () => {
+      const id = Math.random().toString(36).substr(2, 9);
+      ws.send(JSON.stringify({ type: 'watcher', id }));
+    });
+  </script>
 </body>
 </html>
