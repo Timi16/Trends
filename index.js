@@ -4,6 +4,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const userRoutes = require('./routes/userRoutes');
 const sellerRoutes = require('./routes/sellerRoutes');
+const commentRoutes=require('./routes/commentRoutes');
 const productRoutes = require('./routes/productRoutes');
 const http = require('http');
 const WebSocket = require('ws');
@@ -26,7 +27,7 @@ mongoose.connect("mongodb+srv://Admin:admin12345@atlascluster.am2nbgm.mongodb.ne
 app.use('/api', userRoutes);
 app.use('/api', sellerRoutes);
 app.use('/api', productRoutes);
-
+app.use('/api', commentRoutes');
 wss.on('connection', (ws) => {
   ws.on('message', (message) => {
     const data = JSON.parse(message);

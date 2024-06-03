@@ -54,8 +54,21 @@ const productSchema = new mongoose.Schema({
     }]
 });
 
+const commentSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User', // Reference to the user who made the comment
+    required: true
+  },
+  content: {
+    type: String,
+    required: true
+  },
+});
+
 module.exports = {
     User: mongoose.model('User', userSchema),
     Seller: mongoose.model('Seller', sellerSchema),
-    Product: mongoose.model('Product', productSchema)
+    Product: mongoose.model('Product', productSchema),
+   Comment: mongoose.model('Comment', commentSchema)
 };
