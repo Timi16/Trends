@@ -18,7 +18,13 @@ let broadcaster;
 app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, 'public')));
+// Serve static files from the 'public' directory
+app.use(express.static(path.join(__dirname, 'Trendxng')));
+
+// Define a route for the root URL to serve Trends.html
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'Trendxng', 'Authentication.html'));
+});
 
 mongoose.connect("mongodb+srv://Admin:admin12345@atlascluster.am2nbgm.mongodb.net/?retryWrites=true&w=majority&appName=AtlasCluster")
   .then(() => console.log('MongoDB connected'))

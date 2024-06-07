@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Playback</title>
+    <link rel="stylesheet" href="Trends.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;1,100;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.9.0/css/all.min.css" integrity="sha512-q3eWabyZPc1XTCmF+8/LuE1ozpg5xxn7iO89yfSOd5/oKvyqLngoNGsx8jq92Y8eXJ/IRxQbEC+FGSYxtk2oiw==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <style>
+        body, html{
+            margin: 0; padding: 0;
+            font-family: roboto, sans-serif;
+            background-color: rgb(210, 210, 210);
+        }
+        video::-webkit-media-controls {
+            display: none !important;
+        }
+        #Outline{
+            position: absolute;
+            top: .5rem;
+            fill: white;
+        }
+        .video-player {
+            width: 100%;
+            height: 100vh;
+        }
+        video{
+            position: absolute;
+            top: 0; right: 0; left: 0;
+            width: 100%;
+            object-fit: cover;
+            object-position: center;
+            height: 100%;
+            margin: 0; padding: 0;
+            z-index: 10;
+        }
+        img{
+            border-radius: 50%;
+        }
+        .lower-contents{
+            position: absolute;
+           right: 0; left: 0;
+            z-index: 100; bottom: .5rem;
+        }
+        .video-contents{
+            position: absolute;
+            top: 0; right: 0; left: 0;
+            z-index: 100;
+        }
+        .share-popup{
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .share-icons{
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            align-items: center;
+            height: 3rem;
+            margin-top: 1.4rem;
+        }
+        .share-icons-container{
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            bottom: 0;
+            width: 96%;
+            height: 16%;
+            z-index: 100;
+            background-color: rgb(43, 43, 43);
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            color: white;
+            justify-content: center;
+            align-items: center;
+            gap: 2rem;
+        }
+        .fab{
+            font-size: 3rem;
+        }
+        .cancel-icon{
+            position: absolute;
+            right: .5rem; top: .5rem;
+            fill: white;
+        }
+        .comments-container{
+            width: 80%;
+            height: 30%;
+            background-color: rgba(255, 250, 250, 0);
+            position: absolute;
+            bottom: 4rem;
+            left: .5rem;
+            z-index: 200;
+            overflow-y: scroll;
+            overflow-x: hidden;
+        }
+        #submit-comment{
+            background-color: transparent;
+            border: none;
+        }
+        .comment__info {
+            margin: 0;
+            color: white;
+        }
+        .comment__info p{
+            margin: 0;
+        }
+        .user-container{
+            margin-top: .5rem;
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+            align-items: center;
+            color: white;
+        }
+        .pic{
+            background-color: aqua;
+            width: 1.5rem;
+            height: 1.5rem;
+            color: white;
+            font-size: 1rem;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="video-player">
+        <div class="video-contents">
+           <a href="mainlivepage.html">
+            <svg class="outline" id="Outline" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="20" height="20"><g id="_01_align_center" data-name="01 align center">
+                <path d="M16.752,23.994,6.879,14.121a3,3,0,0,1,0-4.242L16.746.012,18.16,1.426,8.293,11.293a1,1,0,0,0,0,1.414l9.873,9.873Z"/></g>
+            </svg>
+           </a>
+                <div class="brands-stats-live">
+                    <div class="mini-profile"></div>
+                    <h4>TrendX</h4>
+                </div>
+        
+            <div class="live-symbol">
+                <p>Live</p>
+                <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0,0,256,256">
+                    <g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(5.33333,5.33333)"><circle cx="24" cy="24" r="6"></circle><path d="M17.09,16.789l-2.769,-2.889c-2.658,2.548 -4.321,6.127 -4.321,10.1c0,3.973 1.663,7.552 4.321,10.1l2.769,-2.889c-1.9,-1.822 -3.09,-4.378 -3.09,-7.211c0,-2.833 1.19,-5.39 3.09,-7.211z"></path><path d="M33.679,13.9l-2.769,2.889c1.9,1.822 3.09,4.378 3.09,7.211c0,2.833 -1.19,5.389 -3.09,7.211l2.769,2.889c2.658,-2.548 4.321,-6.127 4.321,-10.1c0,-3.973 -1.663,-7.552 -4.321,-10.1z"></path><g><path d="M11.561,11.021l-2.779,-2.9c-4.177,4.004 -6.782,9.636 -6.782,15.879c0,6.243 2.605,11.875 6.782,15.879l2.779,-2.9c-3.419,-3.278 -5.561,-7.879 -5.561,-12.979c0,-5.1 2.142,-9.701 5.561,-12.979z"></path><path d="M39.218,8.121l-2.779,2.9c3.419,3.278 5.561,7.879 5.561,12.979c0,5.1 -2.142,9.701 -5.561,12.979l2.779,2.9c4.177,-4.004 6.782,-9.636 6.782,-15.879c0,-6.243 -2.605,-11.875 -6.782,-15.879z"></path></g></g></g>
+                </svg>
+            </div>
+        </div>
+       <div class="lower-contents">
+            <form id="commentForm" class="commenting-section-in-live">
+                <input type="text" id="commentInput" placeholder="Add a comment...">
+                <button id="submit-comment" type="submit">
+                    <svg  class="send-a-comment" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24"><g id="_01_align_center" data-name="01 align center">
+                        <path d="M1.444,6.669a2,2,0,0,0-.865,3.337l3.412,3.408V20h6.593l3.435,3.43a1.987,1.987,0,0,0,1.408.588,2.034,2.034,0,0,0,.51-.066,1.978,1.978,0,0,0,1.42-1.379L23.991.021ZM2,8.592l17.028-5.02L5.993,16.586v-4Zm13.44,13.424L11.413,18h-4L20.446,4.978Z"/></g>
+                    </svg>
+                </button>
+                <svg xmlns="http://www.w3.org/2000/svg" class="share-icon" viewBox="0 0 32 32" style="height: 30px;">
+                    <path d="M2 29a1.12 1.12 0 0 1-.31 0A1 1 0 0 1 1 28v-1A19 19 0 0 1 17 8.24V4a1 1 0 0 1 1.6-.8l12 9a1 1 0 0 1 0 1.6l-12 9A1 1 0 0 1 17 22v-3.75a18.66 18.66 0 0 0-12.07 7.42l-2.12 2.92A1 1 0 0 1 2 29ZM19 6v3.12a1 1 0 0 1-.89 1 17 17 0 0 0-15 14.6l.16-.21a20.68 20.68 0 0 1 14.63-8.4 1 1 0 0 1 .77.26 1 1 0 0 1 .33.74V20l9.33-7Z" data-name="Layer 51" fill="#ffffff" class="fill-101820"/>
+                </svg> 
+            </form>
+        </div>
+
+        <div class="comments-container" id="comments-container">
+            <!--
+                <div class="comment__card">
+                        <div class="pic center__display">
+                            A
+                        </div>
+                    <div class="comment__info">
+                        <small class="nickname">
+                            UserNameHere
+                        </small>
+                        <p class="comment">
+                            Lorem ipsum dolor sit amet consectetur adipisicing elit. Tempora, in magnam! Libero?
+                        </p>
+                       
+                    </div>
+                </div>
+            -->
+        </div>
+        
+        <a href="https://wa.me/2349024531295?text=Hello%2C%20what%20will%20you%20like%20to%20order" target="_blank" class="whatsapp-link">
+            <img src="images/Whatsapp icons for free download _ Freepik.jpg" alt="WhatsApp" height="40">
+        </a>
+        <div class="share-popup">
+            <div class="share-icons-container">
+                <svg class="cancel-icon" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 512.021 512.021" style="enable-background:new 0 0 512.021 512.021;" xml:space="preserve" width="15" height="15">
+                    <g><path d="M301.258,256.01L502.645,54.645c12.501-12.501,12.501-32.769,0-45.269c-12.501-12.501-32.769-12.501-45.269,0l0,0   L256.01,210.762L54.645,9.376c-12.501-12.501-32.769-12.501-45.269,0s-12.501,32.769,0,45.269L210.762,256.01L9.376,457.376   c-12.501,12.501-12.501,32.769,0,45.269s32.769,12.501,45.269,0L256.01,301.258l201.365,201.387   c12.501,12.501,32.769,12.501,45.269,0c12.501-12.501,12.501-32.769,0-45.269L301.258,256.01z"/>
+                    </g></svg>
+                <div class="share-icons">
+                    <!-- Facebook -->
+                    <a class="facebook" href="">
+                        <img  src="images/Facebook comments legitimate grounds for student's removal from college program, court rules.jpg" alt="" height="40">
+                    </a>
+                    <!-- TikTok -->
+                    <a href="" class="tiktok">
+                        <img  src="images/tiktok icon Logo PNG Vector (SVG) Free Download.jpg" alt="" height="40">
+                    </a>
+
+                    <!-- Instagram -->
+                    <a href="" class="instagram">
+                        <img  src="images/10 Surprising Ways to Use Instagram in the Classroom - We Are Teachers.jpg" alt="" height="40">
+                    </a>
+
+                    <!-- Twitter -->
+                    <a href="" class="twitter" >
+                        <img src="images/Which official X Twitter logo should I use_.jpg" alt="" height="40">
+                    </a>
+
+                    <!-- WhatsApp -->
+                    <a href="" class="whatsapp">
+                        <img  src="images/Whatsapp icons for free download _ Freepik.jpg" alt="" height="40">
+                    </a>
+                </div>
+            </div>
+        </div>
+        <video id="videoPlayer" controls autoplay ></video>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-firestore.js"></script>
+    <script type="module">        
+        
+        // Initialize Firebase
+       const firebaseConfig = {
+            apiKey: "AIzaSyDW8dztrdDOgDGzVfYf-V86oJwQ_hqPKcE",
+            authDomain: "storage-video-26982.firebaseapp.com",
+            projectId: "storage-video-26982",
+            storageBucket: "storage-video-26982.appspot.com",
+            messagingSenderId: "745302805245",
+            appId: "1:745302805245:web:e01bf7c49c3852d8b84c94"
+        };
+        
+
+        // Set the video URL to the video player
+        const firebaseApp = firebase.initializeApp(firebaseConfig);
+        const db = firebase.firestore();
+
+        // Retrieve the video URL from local storage
+        const videoURL = localStorage.getItem('currentVideoURL');
+
+       
+
+
+        const videoPlayer = document.querySelector('#videoPlayer');
+        videoPlayer.src = videoURL;
+
+        var shareIconsContainer = document.querySelector('.share-icons-container');
+        var shareIcon = document.querySelector('.share-icon');
+        var cancelIcon = document.querySelector('.cancel-icon');
+
+
+        shareIcon.addEventListener('click', function(){
+            if(shareIconsContainer.style.display ==="none"){
+                shareIconsContainer.style.display ="flex"
+            } else{
+                shareIconsContainer.style.display ="flex"
+            }
+        })
+        cancelIcon.addEventListener('click', function(){
+            if(shareIconsContainer.style.display ==="flex"){
+                shareIconsContainer.style.display ="none"
+            } else{
+                shareIconsContainer.style.display ="flex"
+            }
+        })
+
+        const phoneNumber = '2349024531295';
+        const prefilledMessage = encodeURIComponent('Hello, I would like to order');
+        const whatsappLink = `https://wa.me/${phoneNumber}?text=${prefilledMessage}`;
+        document.querySelector('.whatsapp-link').href = whatsappLink;
+
+        const link = encodeURI('https://openjavascript.info');
+        const msg = encodeURIComponent('Hey, I found this article');
+        const title = encodeURIComponent('Article or Post Title Here');
+
+        const fb = document.querySelector('.facebook');
+        fb.href = `https://www.facebook.com/share.php?u=${link}`;
+         // twitter
+        const twitter = document.querySelector('.twitter');
+        twitter.href = `http://twitter.com/share?&url=${link}&text=${msg}&hashtags=javascript,programming`;
+
+        // whatsapp
+        const whatsapp = document.querySelector('.whatsapp');
+        whatsapp.href = `https://api.whatsapp.com/send?text=${msg}: ${link}`;
+
+        // TikTok (sharing a specific video)
+        const tiktok = document.querySelector('.tiktok');
+        tiktok.href = `https://www.tiktok.com/share?url=${link}`;
+
+        // Instagram (general link to Instagram, as direct share link is not available)
+        const instagram = document.querySelector('.instagram');
+        instagram.href = `https://instagram.com`;
+      
+        videoPlayer.onended = () => {
+            console.log('Video ended, replaying now');
+            videoPlayer.play();
+        };
+         
+       
+        videoPlayer.addEventListener('click', function() {
+            if (videoPlayer.paused) {
+                console.log('Video was paused, playing now');
+                videoPlayer.play();
+            } else {
+                console.log('Video was playing, pausing now');
+                videoPlayer.pause();
+            }
+        });
+
+
+        async function addComment(commentText) {
+            function getVideoIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            console.log('URL Parameters:', urlParams); // Log the URL parameters for debugging
+            const videoId = urlParams.get('videoId');
+            console.log('Video ID from URL:', videoId);
+            return videoId;
+            }
+        }
+
+        async function fetchVideoUrl(videoId) {
+            try {
+                const videoRef = storage.ref().child(`videos/${videoId}.webm`);
+                const videoURL = await videoRef.getDownloadURL();
+                return videoURL;
+            } catch (error) {
+                console.error('Error fetching video URL:', error);
+                return null;
+            }
+        }
+           // Function to get the video ID from the URL
+           function getVideoIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            return urlParams.get('videoId');
+        }
+
+        // Window onload function to set the video URL
+        window.onload = async function() {
+            const videoId = getVideoIdFromUrl();
+            console.log('Video ID from URL:', videoId); // For debugging
+            if (videoId) {
+                const videoURL = await fetchVideoUrl(videoId);
+                if (videoURL) {
+                    const videoPlayer = document.getElementById('videoPlayer');
+                    videoPlayer.src = videoURL;
+                } else {
+                    console.error('Failed to fetch the video URL.');
+                }
+            } else {
+                console.error('Video ID is missing in URL.');
+            }
+        };
+
+
+        // Event listener for form submission
+        commentForm.addEventListener('submit', async (e) => {
+            e.preventDefault(); // Prevent default form submission
+            const commentText = commentInput.value.trim(); // Get comment text
+            if (commentText !== '') {
+            await addComment(commentText); // Add comment to Firestore
+            commentInput.value = ''; // Clear input field after submission
+            }
+        });
+
+       
+
+
+    </script>
+</body>
+</html>

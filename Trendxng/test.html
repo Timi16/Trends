@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="Trends.css">
+    <style>
+        video::-webkit-media-controls {
+          display: none !important;
+        }
+        .controls {
+          display: flex;
+          gap: 10px;
+          margin-top: 10px;
+        }
+        .background{
+            background-color: black;
+            width: 100%;
+            height: 100vh;
+        }
+        video{
+            width: 100%;
+            object-fit: cover;
+            height: 95vh;
+        }
+        button {
+          padding: 5px 10px;
+          cursor: pointer;
+        }
+        #videoLive{
+            display: block;
+        }
+        .recorded-video{
+            display: none;
+        }
+        #videoRecorded{
+            position: absolute;
+            top: 0;
+            right: 0; left: 0; bottom: 0;
+            height: 100vh;
+        }
+    </style>
+</head>
+<body>
+    <!-- Add Firebase scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-storage.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.7/firebase-auth.js"></script>
+    
+    <div class="background camera-access">
+        <a href="Trends.html">
+            <svg xmlns="http://www.w3.org/2000/svg" class="x-cancel-icon" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 512.021 512.021" style="enable-background:new 0 0 512.021 512.021;" xml:space="preserve" width="20" height="20">
+                <g><path d="M301.258,256.01L502.645,54.645c12.501-12.501,12.501-32.769,0-45.269c-12.501-12.501-32.769-12.501-45.269,0l0,0   L256.01,210.762L54.645,9.376c-12.501-12.501-32.769-12.501-45.269,0s-12.501,32.769,0,45.269L210.762,256.01L9.376,457.376   c-12.501,12.501-12.501,32.769,0,45.269s32.769,12.501,45.269,0L256.01,301.258l201.365,201.387   c12.501,12.501,32.769,12.501,45.269,0c12.501-12.501,12.501-32.769,0-45.269L301.258,256.01z"/>
+            </g></svg>
+        </a>
+        <video id="videoLive" autoplay muted playsinline></video>
+
+        <div id="live-start-icon">
+            <div class="live-start-button" onclick="startLiveStream()" type="button" id="buttonStart">
+                <svg  xmlns="http://www.w3.org/2000/svg" id="start-icon" x="0px" y="0px"  viewBox="0 0 48 48">
+                    <circle cx="24" cy="24" r="6" fill="#f44336"></circle><path fill="#f44336" d="M17.09,16.789L14.321,13.9C11.663,16.448,10,20.027,10,24s1.663,7.552,4.321,10.1l2.769-2.889 C15.19,29.389,14,26.833,14,24C14,21.167,15.19,18.61,17.09,16.789z"></path><path fill="#f44336" d="M33.679,13.9l-2.769,2.889C32.81,18.611,34,21.167,34,24c0,2.833-1.19,5.389-3.09,7.211l2.769,2.889 C36.337,31.552,38,27.973,38,24S36.337,16.448,33.679,13.9z"></path><g><path fill="#f44336" d="M11.561,11.021l-2.779-2.9C4.605,12.125,2,17.757,2,24s2.605,11.875,6.782,15.879l2.779-2.9 C8.142,33.701,6,29.1,6,24S8.142,14.299,11.561,11.021z"></path><path fill="#f44336" d="M39.218,8.121l-2.779,2.9C39.858,14.299,42,18.9,42,24s-2.142,9.701-5.561,12.979l2.779,2.9 C43.395,35.875,46,30.243,46,24S43.395,12.125,39.218,8.121z"></path></g>
+                </svg>
+            </div>
+            <div class="stop-button" type="button" id="buttonStop" disabled></div>
+        </div>
+    </div>  
+    
+    <div class="recorded-video">
+        <video id="videoRecorded" controls playsinline></video>
+        <img class="microphone" src="images/60b0225b-f1ff-4536-817b-c81fd4628047-removebg-preview (1).png" alt="" height="45">
+        <div class="number-of-viewers">
+            <p>100</p>
+            <img src="images/Screenshot_2024-05-09_035825-removebg-preview (1).png" alt="" height="20">
+        </div>
+        <svg xmlns="http://www.w3.org/2000/svg" class="live-cancel" xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" id="Capa_1" x="0px" y="0px" viewBox="0 0 512.021 512.021" style="enable-background:new 0 0 512.021 512.021;" xml:space="preserve" width="18" height="18">
+            <g><path d="M301.258,256.01L502.645,54.645c12.501-12.501,12.501-32.769,0-45.269c-12.501-12.501-32.769-12.501-45.269,0l0,0   L256.01,210.762L54.645,9.376c-12.501-12.501-32.769-12.501-45.269,0s-12.501,32.769,0,45.269L210.762,256.01L9.376,457.376   c-12.501,12.501-12.501,32.769,0,45.269s32.769,12.501,45.269,0L256.01,301.258l201.365,201.387   c12.501,12.501,32.769,12.501,45.269,0c12.501-12.501,12.501-32.769,0-45.269L301.258,256.01z"/>
+        </g></svg>
+        <div class="launch-symbol">
+            <p>Live</p>
+            <svg xmlns="http://www.w3.org/2000/svg" x="0px" y="0px" width="25" height="25" viewBox="0,0,256,256">
+                <g fill="#ffffff" fill-rule="nonzero" stroke="none" stroke-width="1" stroke-linecap="butt" stroke-linejoin="miter" stroke-miterlimit="10" stroke-dasharray="" stroke-dashoffset="0" font-family="none" font-weight="none" font-size="none" text-anchor="none" style="mix-blend-mode: normal"><g transform="scale(5.33333,5.33333)"><circle cx="24" cy="24" r="4"></circle><path d="M15.515,13.687c-4.969,4.969-4.969,13.071,0,18.04c0.781,0.781,2.047,0.781,2.828,0c0.781-0.781,0.781-2.047,0-2.828c-3.406-3.406-3.406-8.978,0-12.384c0.781-0.781,0.781-2.047,0-2.828C17.562,12.906,16.296,12.906,15.515,13.687z"></path><path d="M38.343,13.687c-0.781-0.781-2.047-0.781-2.828,0c-0.781,0.781-0.781,2.047,0,2.828c3.406,3.406,3.406,8.978,0,12.384c-0.781,0.781-0.781,2.047,0,2.828c0.781,0.781,2.047,0.781,2.828,0C43.312,26.758,43.312,18.656,38.343,13.687z"></path><path d="M11.636,9.808c-6.25,6.25-6.25,16.383,0,22.633c0.781,0.781,2.047,0.781,2.828,0c0.781-0.781,0.781-2.047,0-2.828c-4.688-4.688-4.688-12.29,0-16.979c0.781-0.781,0.781-2.047,0-2.828C13.683,9.027,12.417,9.027,11.636,9.808z"></path><path d="M42.192,9.808c-0.781-0.781-2.047-0.781-2.828,0c-0.781,0.781-0.781,2.047,0,2.828c4.688,4.688,4.688,12.29,0,16.979c-0.781,0.781-0.781,2.047,0,2.828c0.781,0.781,2.047,0.781,2.828,0C48.442,26.192,48.442,16.058,42.192,9.808z"></path></g></g></svg>
+        </div>
+        <div class="right-scroll"><i class="fa-solid fa-angle-right"></i></div>
+        <div class="left-scroll"><i class="fa-solid fa-angle-left"></i></div>
+        <div class="comments-popup">
+            <div class="number-of-comments">
+                <p>250</p>
+                <i class="fa-solid fa-message"></i>
+            </div>
+            <input type="text" placeholder="Add comment..." class="comments-box">
+            <i class="fa-solid fa-paper-plane"></i>
+        </div>
+        <div class="comments-icons">
+            <i class="fa-solid fa-paper-plane"></i>
+            <i class="fa-solid fa-message"></i>
+        </div>
+        <div class="right-scroll"><i class="fa-solid fa-angle-right"></i></div>
+        <div class="left-scroll"><i class="fa-solid fa-angle-left"></i></div>
+    </div>
+
+    <script>
+        const firebaseConfig = {
+            apiKey: "YOUR_API_KEY",
+            authDomain: "YOUR_AUTH_DOMAIN",
+            projectId: "YOUR_PROJECT_ID",
+            storageBucket: "YOUR_STORAGE_BUCKET",
+            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+            appId: "YOUR_APP_ID"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const storage = firebase.storage();
+
+        let mediaRecorder;
+        let recordedBlobs;
+
+        async function startLiveStream() {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+            const videoElement = document.getElementById('videoLive');
+            videoElement.srcObject = stream;
+
+            mediaRecorder = new MediaRecorder(stream, { mimeType: 'video/webm' });
+            recordedBlobs = [];
+
+            mediaRecorder.ondataavailable = (event) => {
+                if (event.data && event.data.size > 0) {
+                    recordedBlobs.push(event.data);
+                }
+            };
+
+            mediaRecorder.start();
+            document.getElementById('buttonStart').disabled = true;
+            document.getElementById('buttonStop').disabled = false;
+        }
+
+        function stopLiveStream() {
+            mediaRecorder.stop();
+            document.getElementById('buttonStart').disabled = false;
+            document.getElementById('buttonStop').disabled = true;
+            const recordedBlob = new Blob(recordedBlobs, { type: 'video/webm' });
+            const videoElement = document.getElementById('videoRecorded');
+            videoElement.src = URL.createObjectURL(recordedBlob);
+            uploadRecordedVideo(recordedBlob);
+        }
+
+        function uploadRecordedVideo(blob) {
+            const storageRef = storage.ref();
+            const videoRef = storageRef.child('videos/' + Date.now() + '.webm');
+            videoRef.put(blob).then((snapshot) => {
+                console.log('Uploaded a blob or file!', snapshot);
+            });
+        }
+
+        document.getElementById('buttonStop').addEventListener('click', stopLiveStream);
+    </script>
+</body>
+</html>
